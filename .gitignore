@@ -4,3 +4,4 @@ airline-checkin-system
 connection-pool-old
 golang_tutorial
 rdb-based-kv-store
+mysql-local-read-replica
