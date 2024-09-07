@@ -1,6 +1,10 @@
+**.pyc
+history.txt
+
 system-design-questions
 **.DS_Store
 connection-pool-old
 golang_tutorial
 # rdb-based-kv-store
 mysql-local-read-replica
+load-balancer/loadtest_results.json
