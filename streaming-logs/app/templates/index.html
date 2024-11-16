@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Deployment Logs</title>
+</head>
+
+<body>
+    <h1>Deployment Logs</h1>
+    <ul>
+        {% for deployment in deployments %}
+            <li><a href="/deployments/{{ deployment }}">{{ deployment }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <form action="/deployments" method="post">
+        <button type="submit">Trigger New Deployment</button>
+    </form>
+</body>
+
+</html>
