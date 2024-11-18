@@ -6,5 +6,7 @@ system-design-questions
 connection-pool-old
 golang_tutorial
 # rdb-based-kv-store
-mysql-local-read-replica
+# mysql-local-read-replica
 load-balancer/loadtest_results.json
+mysql-local-read-replica/primary-data
+mysql-local-read-replica/replica-data
