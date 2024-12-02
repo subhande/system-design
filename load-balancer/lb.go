@@ -93,6 +93,9 @@ func (lb *LB) Proxy(req IncomingReq) {
 
 	backend.NumRequests++
 	// Proxying the request
+	// We are using goroutines as these are blocking calls. 
+	// Whenever there is data will be available on the source connection it will be copied to the backend connection
+	// and vice versa
 	go io.Copy(backendConn, req.srcConn)
 	go io.Copy(req.srcConn, backendConn)
 }
