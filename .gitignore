@@ -10,3 +10,4 @@ golang_tutorial
 load-balancer/loadtest_results.json
 mysql-local-read-replica/primary-data
 mysql-local-read-replica/replica-data
+distributed-id-generator/id.txt
