@@ -3,9 +3,22 @@ package central_id_service
 import (
 	"database/sql"
 	"fmt"
+	"sync"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+const (
+	SNOWFLAKE_COUNTER_PATH = "snowflake_counter.txt" // Path to the file where the last saved ID is stored
+)
+
+type SnowflakeStaticCounter struct {
+	counter int64
+	mu      sync.Mutex // Mutex to ensure thread-safe counter updates
+}
+
+var snowflakeStaticCounter = SnowflakeStaticCounter{counter: 0}
 
 // CounterModel represents the counter table in the database
 type CounterModel struct {
@@ -23,7 +36,6 @@ type CounterModel2 struct {
 var DB *sql.DB
 
 // init creates and returns a new database connection to the MySQL server.
-
 func init() {
 	_db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/counter_service_db")
 
@@ -113,7 +125,7 @@ func GenerateIDFlicker(mode string) int64 {
 		}
 
 		generatedID = int64(id)
-		
+
 	} else if mode == "2" {
 		result, err := tx.Exec("REPLACE INTO tickets (stub) VALUES ('a')")
 
@@ -157,4 +169,70 @@ func GenerateIDFlicker(mode string) int64 {
 
 	return int64(generatedID)
 
+}
+
+func GenerateIDSnowFlake(epoch string) int64 {
+	snowflakeStaticCounter.mu.Lock()
+	defer snowflakeStaticCounter.mu.Unlock()
+
+	snowflakeStaticCounter.counter++
+
+	epochTimeMs := int64(0)
+
+	if epoch != "" {
+		// 01-01-2015 convert into milliseconds
+		epochTime, err := time.Parse("02-01-2006", epoch)
+
+		if err != nil {
+			fmt.Println("Error parsing epoch time:", err)
+		}
+
+		epochTimeMs = epochTime.UnixMilli()
+	}
+
+	generetedID := int64(0)
+
+	currTimeStampMs := time.Now().UnixMilli()
+
+	// Epoch milliseconds in 41 bits
+	generetedID = (currTimeStampMs - epochTimeMs) << 10
+
+	// Machine ID in 10 bits
+	generetedID = (generetedID + 1) << 12
+
+	// Counter in 12 bits
+	generetedID = generetedID + snowflakeStaticCounter.counter
+
+	return generetedID
+}
+
+func GenerateIDSnowFlakeInstagram(epoch string, dbShardId int, seqId int) int64 {
+
+	epochTimeMs := int64(0)
+
+	if epoch != "" {
+		// 01-01-2015 convert into milliseconds
+		epochTime, err := time.Parse("02-01-2006", epoch)
+
+		if err != nil {
+			fmt.Println("Error parsing epoch time:", err)
+		}
+
+		epochTimeMs = epochTime.UnixMilli()
+	}
+
+	generetedID := int64(0)
+
+	currTimeStampMs := time.Now().UnixMilli()
+
+	// Epoch milliseconds in 41 bits
+	generetedID = (currTimeStampMs - epochTimeMs) << 13
+
+	// Db Shard ID in 10 bits
+	generetedID = (generetedID + int64(dbShardId)) << 10
+
+	// Sequence Num or Logical Shard ID in 10 bits
+	generetedID = generetedID + int64(seqId)
+
+	return generetedID
 }
