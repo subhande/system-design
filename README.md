@@ -8,10 +8,8 @@ This repository contains multiple projects related to various system designs, se
   - [Table of Contents](#table-of-contents)
   - [Airline Check-in System](#airline-check-in-system)
   - [Connection Pool](#connection-pool)
-  - [Connection Pool (Old)](#connection-pool-old)
   - [DB Sharding](#db-sharding)
   - [Distributed ID Generator](#distributed-id-generator)
-  - [Golang Tutorial](#golang-tutorial)
   - [Hashtag Service](#hashtag-service)
   - [Load Balancer (Advanced)](#load-balancer-advanced)
   - [Load Balancer (Basic)](#load-balancer-basic)
@@ -32,10 +30,6 @@ A system designed to manage airline check-ins.
 
 A project focused on implementing a connection pool.
 
-## [Connection Pool (Old)](connection-pool-old/README.md)
-
-An older version of the connection pool project.
-
 ## [DB Sharding](db-sharding/README.md)
 
 A project that demonstrates database sharding techniques.
@@ -43,10 +37,6 @@ A project that demonstrates database sharding techniques.
 ## [Distributed ID Generator](distributed-id-generator/README.md)
 
 A service for generating unique IDs in a distributed system.
-
-## [Golang Tutorial](golang_tutorial/README.md)
-
-Tutorials and examples for learning Golang.
 
 ## [Hashtag Service](hashtag-service/README.md)
 
