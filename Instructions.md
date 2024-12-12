@@ -8,6 +8,12 @@ docker exec -it mysql mysql -uroot -proot
 
 ```
 
+## POSTGRES Docker
+```
+docker run -d -it --name postgres -e POSTGRES_PASSWORD=root -p 5432:5432 postgres:latest
+docker exec -it postgres psql -U postgres
+```
+
 ## REDIS Docker
 ```
 docker run -d -it --name redis -p 6379:6379 redis:7.4.0

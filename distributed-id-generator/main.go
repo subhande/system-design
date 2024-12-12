@@ -10,7 +10,7 @@ import (
 )
 
 // const NO_OF_IDS = 1000000 // Number of IDs to generate
-const NO_OF_IDS = 1000000 // Number of IDs to generate
+const NO_OF_IDS = 1000 // Number of IDs to generate
 
 func main() {
 
@@ -29,7 +29,7 @@ func main() {
 		fmt.Printf("Generated %d IDs in %d ms | Save Frequency: %d\n", NO_OF_IDS, elapsedTime, frequency)
 	}
 
-	// // Central ID service: Amazon ID generation
+	// Central ID service: Amazon ID generation
 
 	frequencies = []int{100, 500, 1000, 10000}
 
@@ -44,20 +44,20 @@ func main() {
 		fmt.Printf("Generated %d IDs in %d ms | Generation Frequency: %d\n", NO_OF_IDS, elapsedTime, frequency)
 	}
 
-	// // Central ID service: Flicker ID generation
+	// Central ID service: Flicker ID generation
 
-	// MODES := []string{"1", "2", "3"}
+	MODES := []string{"1", "2", "3"}
 
-	// for _, mode := range MODES {
-	// 	start := time.Now()
+	for _, mode := range MODES {
+		start := time.Now()
 
-	// 	for i := 0; i < NO_OF_IDS; i++ {
-	// 		central_id_service.GenerateIDFlicker(mode)
-	// 	}
+		for i := 0; i < NO_OF_IDS; i++ {
+			central_id_service.GenerateIDFlicker(mode)
+		}
 
-	// 	elapsedTime := time.Since(start).Milliseconds()
-	// 	fmt.Printf("Generated %d IDs in %d ms | Mode: %s\n", NO_OF_IDS, elapsedTime, mode)
-	// }
+		elapsedTime := time.Since(start).Milliseconds()
+		fmt.Printf("Generated %d IDs in %d ms | Mode: %s\n", NO_OF_IDS, elapsedTime, mode)
+	}
 
 	// Central ID service: Snowflake ID generation
 
@@ -72,4 +72,11 @@ func main() {
 	elapsedTime := time.Since(start).Milliseconds()
 
 	fmt.Printf("Generated %d IDs in %d ms | Epoch: %s\n", NO_OF_IDS, elapsedTime, epoch)
+
+	// Central ID service: Instagram ID generation
+	start = time.Now()
+	central_id_service.GenerateIDSnowFlakeInstagram()
+	elapsedTime = time.Since(start).Milliseconds()
+
+	fmt.Printf("Generated %d IDs in %d ms | Instagram\n", 15 * 10, elapsedTime)
 }
