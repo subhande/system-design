@@ -9,9 +9,9 @@ This repository contains multiple projects related to various system designs, se
   - [Table Of Contents](#table-of-contents)
     - [Connection Pool](#connection-pool)
     - [DB Sharding](#db-sharding)
-    - [Streaming Logs](#streaming-logs)
+    - [Server Sent Events: Streaming Logs](#server-sent-events-streaming-logs)
     - [Message Brokers](#message-brokers)
-    - [MySQL Local Read Replica](#mysql-local-read-replica)
+    - [MySQL Read Replica Setup](#mysql-read-replica-setup)
     - [Mock EC2 Status Check](#mock-ec2-status-check)
     - [Airline Check-in System](#airline-check-in-system)
     - [SQL Locking](#sql-locking)
@@ -30,7 +30,7 @@ Connection Pooling is a widely-used design pattern aimed at optimizing database 
 Sharding is a database design pattern that breaks a large database into smaller, more manageable parts called shards. Each shard is a separate database that stores a subset of the data. Sharding is used to improve the performance and scalability of the database by distributing the data across multiple servers.
 
 
-### [Streaming Logs](streaming-logs/README.md)
+### [Server Sent Events: Streaming Logs](streaming-logs/README.md)
 
 A service for streaming logs in real-time.
 
@@ -39,7 +39,8 @@ A service for streaming logs in real-time.
 
 Examples and implementations of various message brokers.
 
-### [MySQL Local Read Replica](mysql-local-read-replica/README.md)
+
+### [MySQL Read Replica Setup](mysql-local-read-replica/README.md)
 
 A guide and setup for creating a local MySQL read replica.
 
