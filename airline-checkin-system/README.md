@@ -7,6 +7,11 @@ The Airline Checkin System is designed to handle the process of seat allocation 
 
 ---
 
+## Abstract
+This document presents an evaluation of various seat assignment methods in an airline check-in system. The study compares four approaches: sequential, parallel without lock, parallel with lock, and parallel with skip lock. The findings demonstrate that the parallel assignment with skip lock method is the most efficient, achieving the fastest time of 24.38 ms to assign 120 seats. A detailed comparison table is provided, summarizing the performance metrics for each method.
+
+---
+
 ## Problem Statement
 
 ### Constraints
@@ -35,6 +40,8 @@ id | name
 #### Seats Table
 
 id | name | trip_id | user_id
+
+---
 
 
 ## Experiments
@@ -112,9 +119,9 @@ Total seats assigned:  **120**
 
 ### Comparison Table
 
-| Experiment | Time Taken | Total Seats Assigned |
+| Experiment | Time Taken (ms) | Total Seats Assigned |
 |------------|------------|----------------------|
-| Sequential | 64.775042ms | 120 |
-| Parallel without lock | 30.4935ms | 9 |
-| Parallel with lock | 54.8835ms | 120 |
-| Parallel with skip lock | 24.381041ms | 120 |
+| Sequential | 64.78 | 120 |
+| Parallel without lock | 30.49 | 9 |
+| Parallel with lock | 54.88 | 120 |
+| Parallel with skip lock | 24.38 | 120 |
