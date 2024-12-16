@@ -1,6 +1,6 @@
-# Streaming Logs
+# Server Sent Events: Streaming Logs
 
-This project provides a service to stream logs in real-time using FastAPI. It is a mock deployment service that allows users to trigger new deployments and view logs for each deployment. The service is built using FastAPI, a modern web framework for building APIs with Python.
+This project provides a service to stream logs in real-time using FastAPI. It is a mock deployment service that allows users to trigger new deployments and view logs for each deployment. The service is built using FastAPI, a modern web framework for building APIs with Python. This uses Server-Sent Events (SSE) to stream logs in real-time to the client.
 
 ## Features
 

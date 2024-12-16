@@ -32,22 +32,21 @@ Sharding is a database design pattern that breaks a large database into smaller,
 
 ### [Server Sent Events: Streaming Logs](streaming-logs/README.md)
 
-A service for streaming logs in real-time.
-
+This project provides a service to stream logs in real-time using FastAPI. It is a mock deployment service that allows users to trigger new deployments and view logs for each deployment. The service is built using FastAPI, a modern web framework for building APIs with Python. This uses Server-Sent Events (SSE) to stream logs in real-time to the client.
 
 ### [Message Brokers](message-brokers/README.md)
 
-Examples and implementations of various message brokers.
+Examples and implementations of various message brokers i.e. RabbitMQ, Kafka, etc.
 
 
-### [MySQL Read Replica Setup](mysql-local-read-replica/README.md)
+### [MySQL Read Replica Setup](mysql-read-replica/README.md)
 
-A guide and setup for creating a local MySQL read replica.
+A Step-by-step guide to setting up a MySQL read replica using Docker. It covers the process of initializing the primary and replica MySQL containers, configuring replication, and verifying the setup. By the end, you'll have a functional read replica where data from the primary database is automatically synchronized to the replica.
 
 
 ### [Mock EC2 Status Check](mock-ec2-status-check-using-short-and-long-polling/README.md)
 
-A mock service for checking EC2 instance statuses using short and long polling.
+This project demonstrates how to implement a mock EC2 status check service using short and long polling. The service simulates the behavior of an EC2 instance status check, allowing clients to check the status of an instance using either short polling (regular HTTP requests) or long polling (HTTP requests that wait for a response). This project provides a simple and effective way to understand and implement polling mechanisms in web services.
 
 
 ### [Airline Check-in System](airline-checkin-system/README.md)
@@ -57,7 +56,7 @@ The Airline Checkin System is designed to handle the process of seat allocation 
 
 ### [SQL Locking](sql-locking/README.md)
 
-Examples and explanations of SQL locking mechanisms.
+In this experiment, we will explore the concept of SQL locking mechanisms and their impact on database transactions. SQL locking is a crucial aspect of database management systems that ensures data consistency and integrity during concurrent access. By understanding how different locking strategies work, we can design more efficient and reliable database applications.
 
 
 ### [RDB Based KV Store](rdb-based-kv-store/README.md)
