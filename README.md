@@ -19,6 +19,9 @@ This repository contains multiple projects related to various system designs, se
     - [Load Balancer](#load-balancer)
     - [Remote Lock](#remote-lock)
     - [Distributed ID Generator](#distributed-id-generator)
+    - [Comparative Analysis of UUID and Auto-Increment ID Insertion Performance](#comparative-analysis-of-uuid-and-auto-increment-id-insertion-performance)
+    - [MySQL LIMIT OFFSET vs Cursor-Based Pagination](#mysql-limit-offset-vs-cursor-based-pagination)
+    - [MySQL ON DUPLICATE KEY UPDATE vs REPLACE INTO Performance Analysis](#mysql-on-duplicate-key-update-vs-replace-into-performance-analysis)
     - [Hashtag Service](#hashtag-service)
 
 ### [Connection Pool](connection-pool/README.md)
@@ -61,27 +64,41 @@ In this experiment, we will explore the concept of SQL locking mechanisms and th
 
 ### [RDB Based KV Store](rdb-based-kv-store/README.md)
 
-A key-value store based on a relational database.
+This project outlines the development of a Key-Value (KV) store using a relational database management system (RDBMS), specifically MySQL. The application, written in Go, provides essential KV store operations, including adding key-value pairs with a Time-To-Live (TTL), retrieving values, removing keys, and clearing expired entries.
 
 
 ### [Load Balancer](load-balancer/README.md)
 
-A basic implementation of a load balancer.
+This project implements a load balancer that distributes incoming requests across multiple backend servers to ensure efficient resource utilization and high availability. This is L4 (Transport Layer) load balancing, which operates at the network transport layer and forwards requests based on network and transport layer information.
 
 
 ### [Remote Lock](remote-lock/README.md)
 
-A project for implementing remote locking mechanisms.
+This repository explores the implementation of remote locks using Redis 🛠️ in Go 🐹. The system supports single-instance locks 🔑 and quorum-based distributed locks 🌐, providing mechanisms for reliable ✅ and efficient ⚡ synchronization in both standalone 🖥️ and distributed environments. By leveraging Redis’s atomic operations ⚙️, the locks ensure consistency 📏 and robustness 💪.
 
 
-### [Distributed ID Generator](distributed-id-generator/README.md)
 
-A service for generating unique IDs in a distributed system.
+### [Distributed ID Generator](distributed-id-generator/README.md#distributed-id-generation)
 
+This repository explores different approaches to generating unique identifiers in a distributed system. The goal is to provide a comprehensive overview of the different strategies and their trade-offs.
+
+
+### [Comparative Analysis of UUID and Auto-Increment ID Insertion Performance](distributed-id-generator/README.md#comparative-analysis-of-uuid-and-auto-increment-id-insertion-performance)
+
+This project aims to compare the performance of UUIDs and auto-increment IDs for insertion operations in a MySQL database. By analyzing the time taken to insert records using both types of identifiers, we can gain insights into the efficiency and scalability of each approach.
+
+### [MySQL LIMIT OFFSET vs Cursor-Based Pagination](distributed-id-generator/README.md#mysql-limit-offset-vs-cursor-based-pagination)
+
+This experiment compares the performance of two pagination techniques in MySQL: **LIMIT OFFSET Pagination** and **Cursor-Based Pagination**, using a dataset of 6,000,000 rows. The test utilizes an auto-increment or monotonically increasing ID for efficient retrieval in Cursor-Based Pagination.
+
+### [MySQL ON DUPLICATE KEY UPDATE vs REPLACE INTO Performance Analysis](distributed-id-generator/README.md#mysql-on-duplicate-key-update-vs-replace-into-performance-analysis)
+
+This report presents a comparative analysis of two MySQL statements, `ON DUPLICATE KEY UPDATE` and `REPLACE INTO`, for handling insertions with potential conflicts. The study evaluates the performance of these statements in a high-concurrency environment with a focus on efficiency and scalability.
 
 ### [Hashtag Service](hashtag-service/README.md)
 
-A service for managing and generating hashtags.
+The Hashtag Service is designed to manage and generate hashtags for posts. It includes functionalities for generating posts with hashtags, extracting hashtags from posts, counting hashtag occurrences, and storing the data in a MongoDB database.
+
 
 
 

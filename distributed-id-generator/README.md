@@ -15,7 +15,7 @@
       - [6. Snowflake At Instagram](#6-snowflake-at-instagram)
   - [Comparative Analysis of UUID and Auto-Increment ID Insertion Performance](#comparative-analysis-of-uuid-and-auto-increment-id-insertion-performance)
     - [Performance Metrics](#performance-metrics)
-  - [Report: MySQL LIMIT OFFSET vs Cursor-Based Pagination](#report-mysql-limit-offset-vs-cursor-based-pagination)
+  - [MySQL LIMIT OFFSET vs Cursor-Based Pagination](#mysql-limit-offset-vs-cursor-based-pagination)
     - [Overview](#overview)
     - [Implementation Details](#implementation-details)
       - [Environment:](#environment)
@@ -120,10 +120,10 @@ No of IDs | Counter Store Frequency | Duration (ms)
 <img src="image-1.png" alt="Alt Text" width="500">
 
 
-## Report: MySQL LIMIT OFFSET vs Cursor-Based Pagination
+## MySQL LIMIT OFFSET vs Cursor-Based Pagination
 
 ### Overview
-This report compares the performance of two pagination techniques in MySQL: **LIMIT OFFSET Pagination** and **Cursor-Based Pagination**, using a dataset of 6,000,000 rows. The test utilizes an auto-increment or monotonically increasing ID for efficient retrieval in Cursor-Based Pagination.
+This experiment compares the performance of two pagination techniques in MySQL: **LIMIT OFFSET Pagination** and **Cursor-Based Pagination**, using a dataset of 6,000,000 rows. The test utilizes an auto-increment or monotonically increasing ID for efficient retrieval in Cursor-Based Pagination.
 
 ---
 
