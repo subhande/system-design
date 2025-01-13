@@ -8,6 +8,6 @@ golang_tutorial
 # rdb-based-kv-store
 # mysql-local-read-replica
 load-balancer/loadtest_results.json
-mysql-local-read-replica/primary-data
-mysql-local-read-replica/replica-data
+mysql-read-replica/primary-data
+mysql-read-replica/replica-data
 distributed-id-generator/id.txt
