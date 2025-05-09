@@ -172,10 +172,15 @@ func GenerateIDFlicker(mode string) int64 {
 }
 
 func GenerateIDSnowFlake(epoch string) int64 {
+	// generated id -> 64 bits -> epoch ms (41 bits) + machine id (10 bits) + counter (12 bits)
 	snowflakeStaticCounter.mu.Lock()
 	defer snowflakeStaticCounter.mu.Unlock()
 
+	// Increment the counter
 	snowflakeStaticCounter.counter++
+
+	// Reset the counter if it exceeds the maximum value for 12 bits
+	snowflakeStaticCounter.counter = snowflakeStaticCounter.counter % (1 << 12)
 
 	epochTimeMs := int64(0)
 
@@ -205,4 +210,3 @@ func GenerateIDSnowFlake(epoch string) int64 {
 
 	return generetedID
 }
-
