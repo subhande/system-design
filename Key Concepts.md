@@ -1,0 +1,204 @@
+# Key Concepts
+
+- Decisions -> Every decision would affect one of these 6 facotor
+  - Database
+  - Caching
+  - Scaling
+  - Delegation
+  - Concurrency
+  - Communication
+- Components
+  - CPU
+  - RAM
+  - Disk
+  - Network
+- Design Architecture
+  - Opposite's Framework
+  - Push vs Pull Architecture
+  - Storage Compute Separation
+  - Leader Election --> Infinite Loop --> Monitor -> Monitior -> Monitor
+    - e.g. Zookeeper, Orchestrator, etc.
+  - Active-Passive (One active node at a time)
+    - e.g. Core DNS, etc.
+  - VIP (Virtual IP Address) -> Same Virtual IP address is assigned to multiple machines
+    - Router routes virtual IP -> Actual Machine IP
+    - Used in CoreDNS
+  - Service (API) vs Function (Function as a Service)
+- Request Hedging / Cache Debouncing
+- Common Optimizations
+  - Disk I/O
+  - Computation
+  - N/w I/O
+- Semaphores
+- Soft Delete vs Hard Delete
+- UNIT TECH ECHONOMICS
+  - Good way to get a idea is to do 'Load Testing'
+  - How many requests a single machine can handle
+  - How many requests a single DB can handle
+  - How many connections a DB can handle
+- Capacity Estimation
+- Scaling
+  - Scaling -> Ability handle large number of concurrent requests
+    - Vertical Scaling
+    - Horizontal Scaling
+      - Read Replica
+      - Sharding
+      - Sharding + Read Replica
+  - API Server is easy to scale -> Stateless
+  - DB is hard to scale -> Stateful
+  - API -> DB
+  - Whenever you scale, always do it bottom up!
+    - Scale the DB first, then API server
+  - Overprovision the DB -> Then scale the API server
+  - a -> b != ~a -> ~b
+  - Either API server knows DB topolopgy or you add a "Proxy" that is aware of the topology and can route the request to the right DB (RDB Proxy or ProxySQL)
+- Delegation
+  - What does not need to be done in realtime or synchronously should not be done in realtime or synchronously
+  - Message Broker + Worker/Consumer
+- Separation of Concerns
+  - Separation of Concerns -> Each component should do one thing and do it well
+- Communication
+  - REST API
+  - gRPC
+  - Short Polling
+  - Long Polling
+  - WebSockets
+  - Server-Sent Events (Unidirectional)
+- Database
+  - Relational DB
+    - Transactions
+    - ACID Properties
+      - Atomicity
+      - Consistency
+      - Isolation
+      - Durability
+    - Isolation Levels
+      - Read Uncommitted
+      - Read Committed
+      - Repeatable Read
+      - Serializable
+    - Vertical Scaling
+    - Horizontal Scaling
+      - Read Replica
+      - Sharding
+        - Who owns the data? -> API server / Compute server or Proxy Layer know who owns the data
+        - Hash Based Partitioning
+        - Range Based Partitioning
+      - Read Replica + Sharding
+    - Sharding vs Partitioning
+      - Sharding
+      - Partitioning
+        - Horizontal Partitioning
+        - Vertical Partitioning
+    - Avoid shards such a way it minimizes cross-shard queries
+  - Non Realational DB
+    - Types
+      - Key-Value Store
+      - Document Store
+      - Graph DB (Use graph DB when we need graph algorithms)
+        - Great for modelling social behaviours, recommendations, Fraud Detection, etc.
+        - Neo4j, Neptunem DGraph, TigerGraph
+    - Most of them "shard" out of the box
+    - Myth: Non-Raelational DBs scale well and relational DBs do not scale well
+    - If we do not use transactions, forein key checks then Relational DBs can scale well
+    - Why non relational DBs scale well?
+      - There is no relations and constraints
+      - Data is stored in a way that is easy to shard -> split across multiple nodes
+    - If we relax the constraints of a relational DB, then it can scale well
+      - do not use foreign key checks
+      - do not use cross shard queries
+      - do manual sharding
+- Row Oriented DB vs Column Oriented DB
+  -Row Oriented DB
+    - Data is stored in rows
+    - Good for OLTP (Online Transaction Processing)
+    - Good for transactional queries
+    - Examples: MySQL, PostgreSQL, Oracle, SQL Server
+  - Column Oriented DB
+    - Data is stored in columns
+    - Good for OLAP (Online Analytical Processing)
+    - Good for analytical queries
+    - Examples: ClickHouse, Apache Druid, Amazon Redshift, Google BigQuery
+
+
+- DB Locking (Pessimistic)
+  - Shared Lock
+  - Exclusive Lock (More commonly used)
+  - Skip Lock (Fixed inventory + contention e.g. movie ticket booking or airline seat booking)
+  - No Wait Lock (Throw an error if the lock is not available)
+
+- DB Query Optimization
+  - FTS (Full Table Scan)
+  - FIS (Full Index Scan)
+  - Hard Delete vs Soft Delete
+  - Indexing
+
+- Data Modeling Guidelines
+  - Minimize the number of filed. Do not store which can be derived
+  - How the query is going to be used
+  - If data gonna be huge take account of what will be sharding key
+
+# Diff Type of Databases and Caches
+- Key-Value Store
+  - Redis
+  - Memcached
+  - Dragonfly DB
+  - Dice Db
+- Document Store
+  - MongoDB
+  - CouchDB
+  - DynamoDB
+- SQL Databases
+  - MySQL
+  - PostgreSQL
+  - Amazon Aurora
+  - CockroachDB
+  - Casandra
+
+
+# Case Studies
+  - SQL backed Key-Value Store
+    - Key Idea: Storage Compute Separation
+
+
+# HLD System Design Interview Guidelines
+
+- Goal: Evaluate your ability to design a system to solve a complex problem
+- It does not aim to test your ability to create 100% perfect solution
+- It asses your ability to design the blueprint of the architecture, analyze a complex problem, discuss multiple approaches, and make trade-offs (pros and cons) to arrive at a workable solution
+- Open ended questions
+- Use Framework
+  - Define the problem space (5 min)
+    - Understand the problem
+    - Ask lot of questions -> Define the scope of design
+    - Broad and Vague -> Narrow and Specific
+  - Functional and Non-Functional Requirements
+    - Functional Requirements
+      - State Assumptions -> So interviewer can correct you if you are wrong
+      - who are our clients?
+      - Do we need to talk to pieces of the existing system?
+      - what are the existing pieces?
+    - Non-Functional Requirements
+      - User Experience
+      - Business Objectives
+      - Performance
+      - Scalability
+      - Security
+      - Reliability
+  - Estimate Data
+  - Design system at high level (10 min)
+    - API
+    - Client and Server
+  - Deep dive into the Design (10 min)
+  - Scaling and Bottlenecks (10 min)
+    - Single Point of Failure
+    - Data valuable for Replication
+    - Multi Geo Data Centers
+    - Peak time usage or Hot Data
+    - How to support 10x system
+    - Will corrent architecture support 10x system or we need to change it?
+  - Review and Wrap Up (5 min)
+    - Review the design
+    - Discuss trade-offs
+    - Discuss alternatives
+    - Discuss future improvements

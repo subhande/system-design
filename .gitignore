@@ -11,3 +11,7 @@ load-balancer/loadtest_results.json
 mysql-read-replica/primary-data
 mysql-read-replica/replica-data
 distributed-id-generator/id.txt
+**/__pycache__/
+**/.venv/
+**/.ropeproject
+url-shortner
