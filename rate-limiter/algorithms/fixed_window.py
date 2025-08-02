@@ -20,11 +20,17 @@ class FixedWindowRateLimiter(RateLimiter):
         Without Lua scripting, it may lead to inconsistant behavior in a distributed environment
         """
 
+        # # This part is optional, but it helps to ensure that the key is unique for the current time window
+        # current_window = int(time.time() // self.window_size) * self.window_size
+        # # Create a unique key for the current window
+        # key = f"{key}:{current_window}"
+
         # Get the Redis connection
         connection = self.redis_connection.get_connection()
 
         # Increment the count for the key
         current_count = connection.incr(key)
+        current_count = int(current_count)  # Ensure the count is an integer
         print(f"Current count for key '{key}': {current_count}")
 
         # If the count exceeds the limit, deny the request
@@ -44,6 +50,11 @@ class FixedWindowRateLimiter(RateLimiter):
         :return: True if the request is allowed, False otherwise.
         """
 
+        # # This part is optional, but it helps to ensure that the key is unique for the current time window
+        # current_window = int(time.time() // self.window_size) * self.window_size
+        # # Create a unique key for the current window
+        # key = f"{key}:{current_window}"
+
         lua_script = """
         local key = KEYS[1]
         local window_size = tonumber(ARGV[1])
@@ -58,5 +69,5 @@ class FixedWindowRateLimiter(RateLimiter):
         connection = self.redis_connection.get_connection()
 
         # Execute the Lua script
-        result = connection.eval(lua_script, 1, key, self.window_size, self.limit)
+        result = connection.eval(lua_script, 1, key, str(self.window_size), str(self.limit))
         return bool(result)

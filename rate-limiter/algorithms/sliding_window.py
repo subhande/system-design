@@ -201,6 +201,9 @@ class SlidingWindowRateLimiterOptimized(RateLimiter):
             return false
         end
 
+        -- Remove the key
+        redis.call('DEL', key)
+
         -- Update the mapping then increment the count for the current timestamp --
         if #updated_mapping > 0 then
             redis.call('HSET', key, unpack(updated_mapping))
