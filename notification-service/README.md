@@ -246,6 +246,6 @@ go run . -worker p3
 
 
 # Future Improvements
-[ ] Types of campaign - Marketing, Transactional, etc.
-[ ] Trigger One Campaign Multiple Time - With Different User
-[ ] Avoid Sending Multiple Same Marketing Campaign To Same User - Use Redis + Bloom Filter
+- [ ] Types of campaign - Marketing, Transactional, etc.
+- [ ] Trigger One Campaign Multiple Time - With Different User
+- [ ] Avoid Sending Multiple Same Marketing Campaign To Same User - Use Redis + Bloom Filter
