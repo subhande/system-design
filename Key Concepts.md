@@ -15,6 +15,8 @@
 - Design Architecture
   - Opposite's Framework
   - Push vs Pull Architecture
+  - Push and Pull -> Hybrid Architecture
+  - Stateless vs Stateful
   - Storage Compute Separation
   - Leader Election --> Infinite Loop --> Monitor -> Monitior -> Monitor
     - e.g. Zookeeper, Orchestrator, etc.
@@ -31,11 +33,11 @@
   - N/w I/O
 - Semaphores
 - Soft Delete vs Hard Delete
-- UNIT TECH ECHONOMICS
-  - Good way to get a idea is to do 'Load Testing'
-  - How many requests a single machine can handle
-  - How many requests a single DB can handle
-  - How many connections a DB can handle
+- **UNIT TECH ECHONOMICS**
+  - **Good way to get a idea is to do 'Load Testing'**
+  - **How many requests a single machine can handle**
+  - **How many requests a single DB can handle**
+  - **How many connections a DB can handle**
 - Capacity Estimation
 - Scaling
   - Scaling -> Ability handle large number of concurrent requests
@@ -202,3 +204,54 @@
     - Discuss trade-offs
     - Discuss alternatives
     - Discuss future improvements
+
+
+- Cache / Distributed Cache
+  - Space vs time vs absolute correctness
+  - Optimize for space and time -> compromise on absolute correctness
+
+- Before Designing a System
+  - Identify Access Pattern
+  - Indentify Read Path and Write Path
+
+
+- Keep Admin UI and User UI separate for security and scaling reasons
+- If frequency of writes is low, then "Master" takes writes and read requests as well. Replica take read requests only.
+- Cache vs Read Replica
+  - Cache Invalidation requires extra logic
+  - Read Replica is simple to use
+- We can use both Cache and Read Replica together
+  - Cache -> Read Replica -> Master
+
+
+
+
+- Requirements
+  - Functional Requirements
+    - User should be able to create a post
+    - User should be able to like a post
+    - User should be able to comment on a post
+    - User should be able to follow another user
+    - User should be able to see the feed of posts from the users they follow
+  - Non-Functional Requirements
+    - The system should be able to handle 1 million users
+    - The system should be able to handle 10 million posts per day
+    - The system should be able to handle 100 million likes per day
+    - The system should be able to handle 10 million comments per day
+    - The system should have a latency of less than 100 ms for the feed API
+    - The system should be highly available
+    - The system should be scalable
+    - The system should be secure
+    - The system should be reliable and fault tolerant
+    - The system should be cost effective
+
+- API Interface Design:
+  - Mostly have 1-to-1 mapping with the functional requirements
+
+- CAP Theorem: Consistency, Availability, Partition Tolerance
+  - Consistency: Every read receives the most recent write or an error
+  - Availability: Every request receives a response, without guarantee that it contains the most recent write
+  - Partition Tolerance: The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes
+  
+
+- Back of the Envelope Estimation (BOTE) - scale, latecy, storage, etc.

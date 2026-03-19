@@ -15,3 +15,6 @@ distributed-id-generator/id.txt
 **/.venv/
 **/.ropeproject
 url-shortner
+**/.gocache
+**/postgres-data
+**/rabbitmq-data
