@@ -18,3 +18,5 @@ url-shortner
 **/.gocache
 **/postgres-data
 **/rabbitmq-data
+**/.gocache
+**/.vscode
