@@ -255,3 +255,5 @@
   
 
 - Back of the Envelope Estimation (BOTE) - scale, latecy, storage, etc.
+
+- Not everyting needs to be a service. e.g. Rate Limiter or Absuse Masker can be a library that is used by the API server
