@@ -21,12 +21,13 @@ func connectDB() {
 }
 
 func initDB() {
-	// uid (uuid), name (varchar), createdAt (timestamp), visibility (varchar), owner_id (int)
+	// uid (uuid), name (varchar), createdAt (timestamp), expiredAt (timestamp), visibility (varchar), owner_id (int)
 	_, err := DB.Exec(context.Background(), `
     CREATE TABLE IF NOT EXISTS snippets (
         uuid UUID PRIMARY KEY,
         name VARCHAR(120) NOT NULL,
         createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		expiredAt TIMESTAMPTZ,
         visibility VARCHAR(20) NOT NULL,
         owner_id int NOT NULL
     );

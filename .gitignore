@@ -20,3 +20,4 @@ distributed-id-generator/id.txt
 **/.gocache
 **/.vscode
 snippets/snippets-bucket/**
+**/es-data

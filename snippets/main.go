@@ -31,26 +31,12 @@ func getBodyLimitBytes() int {
 	return limitMB * 1024 * 1024
 }
 
-type CreateSnippetRequest struct {
-	UUID       string `json:"uuid,omitempty"`
-	Name       string `json:"name"`
-	Content    string `json:"content,omitempty"`
-	Visibility string `json:"visibility,omitempty"` // e.g., "public", "private"
-	OwnerID    int    `json:"owner_id,omitempty"`
-}
-
-type Snippet struct {
-	UUID       string    `json:"uuid"`
-	Name       string    `json:"name"`
-	CreatedAt  time.Time `json:"createdAt"`
-	Visibility string    `json:"visibility"`
-	OwnerID    int       `json:"owner_id"`
-}
-
 const DEFAULT_OWNER_ID = 1
 const DEFAULT_VISIBILITY = "public"
 
 var BUCKET_NAME string
+
+var producer *KafkaProducer
 
 // Create folder if not exists
 func init() {
@@ -71,6 +57,20 @@ func init() {
 	}
 	connectDB()
 	initDB()
+	log.Debug(fmt.Sprintf("Initializing Kafka producer with brokers: %s and topic: %s", os.Getenv("KAFKA_BROKERS"), os.Getenv("KAFKA_ANALYTICS_TOPIC")))
+	producer = NewKafkaProducer(os.Getenv("KAFKA_BROKERS"), os.Getenv("KAFKA_ANALYTICS_TOPIC"))
+}
+
+func cleanup() {
+	log.Info("Cleaning up resources...")
+	if producer != nil {
+		producer.Close()
+		log.Info("Kafka producer closed successfully")
+	}
+	if DB != nil {
+		DB.Close()
+		log.Info("Database connection pool closed successfully")
+	}
 }
 
 func storeSnippet(id string, snippetPath string, fileName string, content string) (bool, error) {
@@ -136,7 +136,7 @@ func createSnippetHandler(c *fiber.Ctx) error {
 	}
 
 	var contentPath string
-	contentPath = fmt.Sprintf(BUCKET_NAME + "/" + strconv.Itoa(newSnippet.OwnerID))
+	contentPath = fmt.Sprintf("%s/%d", BUCKET_NAME, newSnippet.OwnerID)
 
 	var fileName string
 	fileName = newSnippet.UUID + ".txt"
@@ -145,14 +145,41 @@ func createSnippetHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to store snippet content")
 	}
+	var expiredAt *time.Time
+	if newSnippet.Expiry != 0 {
+		t := time.Now().Add(time.Duration(newSnippet.Expiry) * 24 * time.Hour)
+		expiredAt = &t
+	}
 
 	// Save to Database
 	_, err = DB.Exec(context.Background(), `
-		INSERT INTO snippets (uuid, name, visibility, owner_id)	
-		VALUES ($1, $2, $3, $4)
-	`, newSnippet.UUID, newSnippet.Name, newSnippet.Visibility, newSnippet.OwnerID)
+		INSERT INTO snippets (uuid, name, visibility, owner_id, expiredAt)	
+		VALUES ($1, $2, $3, $4, $5)
+	`, newSnippet.UUID, newSnippet.Name, newSnippet.Visibility, newSnippet.OwnerID, expiredAt)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to save snippet metadata to database")
+	}
+
+	log.Info("Snippet with ID %s created successfully in database", newSnippet.UUID)
+
+	contentSizeInKB := len(newSnippet.Content) / 1024
+	log.Info("Retrieved snippet content size: %d KB", contentSizeInKB)
+
+	event := AnalyticsEvent{
+		EventType:       EventTypeSnippetCreated,
+		SnippetID:       newSnippet.UUID,
+		OwnerID:         newSnippet.OwnerID,
+		Visibility:      newSnippet.Visibility,
+		RequestPath:     c.Path(),
+		UserAgent:       c.Get("User-Agent"),
+		IP:              c.IP(),
+		EventTime:       time.Now(),
+		ContentSizeInKB: contentSizeInKB,
+	}
+
+	err = producer.Publish(context.Background(), event)
+	if err != nil {
+		log.Error("Failed to publish analytics event for snippet creation: %v", err)
 	}
 
 	return c.JSON(fiber.Map{
@@ -168,13 +195,18 @@ func getSnippetHandler(c *fiber.Ctx) error {
 
 	// DB Query Fetch the snippet using snippet_id
 
-	query := `SELECT uuid, name, visibility, owner_id FROM snippets WHERE uuid = $1`
+	query := `SELECT * FROM snippets WHERE uuid = $1`
 	row := DB.QueryRow(context.Background(), query, snippet_id)
 
 	var snippet Snippet
-	err := row.Scan(&snippet.UUID, &snippet.Name, &snippet.Visibility, &snippet.OwnerID)
+	err := row.Scan(&snippet.UUID, &snippet.Name, &snippet.CreatedAt, &snippet.Visibility, &snippet.OwnerID, &snippet.ExpiredAt)
 	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, "Snippet not found")
+		log.Error("Failed to fetch snippet with ID %s: %v", snippet_id, err)
+		return fiber.NewError(fiber.StatusNotFound, fmt.Sprintf("Snippet with ID %s not found", snippet_id))
+	}
+
+	if snippet.ExpiredAt != nil && !snippet.ExpiredAt.IsZero() && time.Now().After(*snippet.ExpiredAt) {
+		return fiber.NewError(fiber.StatusGone, "Snippet has expired")
 	}
 
 	if strconv.Itoa(snippet.OwnerID) != owner_id && snippet.Visibility == "private" {
@@ -182,7 +214,7 @@ func getSnippetHandler(c *fiber.Ctx) error {
 	}
 
 	var snippetPath string
-	snippetPath = fmt.Sprintf(BUCKET_NAME + "/" + strconv.Itoa(snippet.OwnerID))
+	snippetPath = fmt.Sprintf("%s/%d", BUCKET_NAME, snippet.OwnerID)
 
 	var fileName string
 	fileName = snippet_id + ".txt"
@@ -191,18 +223,45 @@ func getSnippetHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to retrieve snippet content")
 	}
+
+	contentSizeInKB := len(content) / 1024
+	log.Info("Retrieved snippet content size: %d KB", contentSizeInKB)
+
+	event := AnalyticsEvent{
+		EventType:       EventTypeSnippetViewed,
+		SnippetID:       snippet.UUID,
+		OwnerID:         snippet.OwnerID,
+		Visibility:      snippet.Visibility,
+		ContentSizeInKB: contentSizeInKB,
+		RequestPath:     c.Path(),
+		UserAgent:       c.Get("User-Agent"),
+		IP:              c.IP(),
+		EventTime:       time.Now(),
+	}
+
+	err = producer.Publish(context.Background(), event)
+	if err != nil {
+		log.Error("Failed to publish analytics event for snippet creation: %v", err)
+	}
+
 	return c.JSON(fiber.Map{
 		"uuid":       snippet.UUID,
 		"name":       snippet.Name,
-		"createdAt":  snippet.CreatedAt,
+		"created_at": snippet.CreatedAt,
 		"visibility": snippet.Visibility,
 		"owner_id":   snippet.OwnerID,
 		"content":    content,
+		"expired_at": snippet.ExpiredAt,
 	})
 }
 
 func main() {
-
+	defer cleanup()
+	// Start multiple Kafka consumers to handle analytics events concurrently
+	for i := 0; i < 3; i++ {
+		// Start Kafka consumer in a separate goroutine
+		go kafkaConsumeAnalyticsEvents(context.Background())
+	}
 	app := fiber.New(fiber.Config{
 		BodyLimit: getBodyLimitBytes(),
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
@@ -258,5 +317,8 @@ func main() {
 		})
 	})
 
-	app.Listen(":6000")
+	err := app.Listen(":6000")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
