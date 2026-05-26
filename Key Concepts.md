@@ -1,5 +1,19 @@
 # Key Concepts
 
+## Basic Concepts
+
+- Points to remember
+	- Understand the core property and access pattern
+	- Build an intuition
+	- Implementation detail, best practices, nuggets spread across
+	- No design should be looked in isolation
+
+- System Design is like sketching
+ - Day 0 Solution - Broad Stroke
+ - Evolve - Find the bottlenecks for each component and rearchitect the system to remove the bottlenecks
+ - Finer Details -> Go into implementation details of each component
+ - Performance Optimization and Cost Efficiency
+
 - Decisions -> Every decision would affect one of these 6 facotor
   - Database
   - Caching
@@ -7,12 +21,14 @@
   - Delegation
   - Concurrency
   - Communication
+
 - Components
   - CPU
   - RAM
   - Disk
   - Network
-- Design Architecture
+
+## Design Architecture
   - Opposite's Framework
   - Push vs Pull Architecture
   - Push and Pull -> Hybrid Architecture
@@ -66,7 +82,7 @@
   - Long Polling
   - WebSockets
   - Server-Sent Events (Unidirectional)
-- Database
+## Database
   - Relational DB
     - Transactions
     - ACID Properties
@@ -111,7 +127,7 @@
       - do not use cross shard queries
       - do manual sharding
 - Row Oriented DB vs Column Oriented DB
-  -Row Oriented DB
+  - Row Oriented DB
     - Data is stored in rows
     - Good for OLTP (Online Transaction Processing)
     - Good for transactional queries
@@ -134,13 +150,16 @@
   - FIS (Full Index Scan)
   - Hard Delete vs Soft Delete
   - Indexing
+  - Pagination 
+    - Offset Pagination
+    - Cursor Pagination (Better than Offset Pagination)
 
 - Data Modeling Guidelines
   - Minimize the number of filed. Do not store which can be derived
   - How the query is going to be used
   - If data gonna be huge take account of what will be sharding key
 
-# Diff Type of Databases and Caches
+### Different Types of Databases and Caches and Queues
 - Key-Value Store
   - Redis
   - Memcached
@@ -155,15 +174,26 @@
   - PostgreSQL
   - Amazon Aurora
   - CockroachDB
-  - Casandra
+  - Cassandra
+- Message Queues
+  - RabbitMQ
+  - Amazon SQS
+- Message Brokers
+  - Apache Kafka
+  - Amazon Kinesis
 
 
-# Case Studies
+## Case Studies
   - SQL backed Key-Value Store
     - Key Idea: Storage Compute Separation
+## Misc
+- SQS
+  - Retry
+    - Message is invisible for a period of time (visibility timeout) after being read. If the message is not deleted within this period, it becomes visible again and can be read by another consumer.
+    - After a certain number of retries, the message can be moved to a dead letter queue for further analysis.
 
 
-# HLD System Design Interview Guidelines
+## HLD System Design Interview Guidelines
 
 - Goal: Evaluate your ability to design a system to solve a complex problem
 - It does not aim to test your ability to create 100% perfect solution
@@ -257,3 +287,4 @@
 - Back of the Envelope Estimation (BOTE) - scale, latecy, storage, etc.
 
 - Not everyting needs to be a service. e.g. Rate Limiter or Absuse Masker can be a library that is used by the API server
+

@@ -15,6 +15,11 @@ type Data struct {
 	EXPIRY int32  `json:"expiry"`
 }
 
+// DB Schema
+// key | value | expiry
+// key | value | expiry | is_deleted
+// key | value | expiry where instead of is_deleted, we can set expiry to -1 to indicate that the key has been deleted
+
 func newConn() *sql.DB {
 	_db, err := sql.Open("mysql", "root:12345678@tcp(localhost:3306)/store")
 	if err != nil {
@@ -40,7 +45,9 @@ func set(db *sql.DB, key string, value string, ttl int32) {
 		panic(err)
 	}
 	expiry := int32(time.Now().Unix()) + ttl
-	_, err = tx.Exec("INSERT INTO kv_store (k, value, expiry) VALUES (?, ?, ?)", key, value, expiry)
+	// _, err = tx.Exec("INSERT INTO kv_store (k, value, expiry) VALUES (?, ?, ?)", key, value, expiry)
+	// Use upsert to update the value if the key already exists
+	_, err = tx.Exec("INSERT INTO kv_store (k, value, expiry) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = ?, expiry = ?", key, value, expiry, value, expiry)
 	if err != nil {
 		panic(err)
 	}
@@ -97,15 +104,16 @@ func cleanup(db *sql.DB) {
 		panic(err)
 	}
 	timestamp := int32(time.Now().Unix())
-	rows, _ := tx.Query("SELECT * FROM kv_store WHERE expiry < ?", timestamp)
-	
+	// rows, _ := tx.Query("SELECT * FROM kv_store WHERE expiry < ?", timestamp)
+	rows, _ := tx.Query("SELECT * FROM kv_store WHERE expiry < ? LIMIT 1000", timestamp)
+
 	for rows.Next() {
 		var data Data
 		rows.Scan(&data.ID, &data.KEY, &data.VALUE, &data.EXPIRY)
 		fmt.Println("Key: ", data.KEY, " will be deleted")
-	
+
 	}
-	_, err = tx.Exec("DELETE FROM kv_store WHERE expiry < ?", time.Now().Unix())
+	_, err = tx.Exec("DELETE FROM kv_store WHERE expiry < ? LIMIT 1000", time.Now().Unix())
 	if err != nil {
 		panic(err)
 	}
@@ -121,7 +129,7 @@ func main() {
 	get(db, "key1")
 	get(db, "key2")
 	// delete(db, "key1")
-	
+
 	// sleep 3 sec
 	// time.Sleep(1 * time.Second)
 	delete(db, "key3")
