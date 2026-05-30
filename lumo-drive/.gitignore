@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+
+# Go build output
+server/bin/
+server/server
+bin/
+playground
+
+# Client local sync state
+.lumo/
