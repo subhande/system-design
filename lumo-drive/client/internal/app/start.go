@@ -1,4 +1,4 @@
-package cmd
+package app
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
 	"github.com/desubhan/system-design/lumo-drive/client/internal/config"
@@ -18,11 +17,9 @@ import (
 	syncpkg "github.com/desubhan/system-design/lumo-drive/client/internal/sync"
 )
 
-// runApp is the default action (no subcommand): ensure the user is logged in and
-// a sync directory is set, then run the background sync daemon with logging.
-func runApp(cmd *cobra.Command, _ []string) error {
-	ctx := cmd.Context()
-
+// Run is the client entry point: ensure the user is logged in and a sync
+// directory is set, then run the background sync daemon with logging.
+func Run(ctx context.Context) error {
 	cfg, err := loadConfig()
 	if err != nil {
 		return err

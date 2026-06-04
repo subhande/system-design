@@ -1,4 +1,4 @@
-package cmd
+package app
 
 import (
 	"bufio"
@@ -7,47 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
 	"github.com/desubhan/system-design/lumo-drive/client/internal/api"
 	"github.com/desubhan/system-design/lumo-drive/client/internal/config"
 )
-
-func newRegisterCmd() *cobra.Command {
-	var username, email string
-	cmd := &cobra.Command{
-		Use:   "register",
-		Short: "Create a new account",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := loadConfig()
-			if err != nil {
-				return err
-			}
-			return runRegister(cmd.Context(), cfg, username, email)
-		},
-	}
-	cmd.Flags().StringVar(&username, "username", "", "account username")
-	cmd.Flags().StringVar(&email, "email", "", "account email")
-	return cmd
-}
-
-func newLoginCmd() *cobra.Command {
-	var email string
-	cmd := &cobra.Command{
-		Use:   "login",
-		Short: "Log in to an existing account",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := loadConfig()
-			if err != nil {
-				return err
-			}
-			return runLogin(cmd.Context(), cfg, email)
-		},
-	}
-	cmd.Flags().StringVar(&email, "email", "", "account email")
-	return cmd
-}
 
 // runRegister prompts for any missing fields, registers, and saves credentials.
 func runRegister(ctx context.Context, cfg *config.Config, username, email string) error {
@@ -84,26 +48,6 @@ func runLogin(ctx context.Context, cfg *config.Config, email string) error {
 		return err
 	}
 	return saveAuth(cfg, resp)
-}
-
-func newLogoutCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "logout",
-		Short: "Clear the saved auth token",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := loadConfig()
-			if err != nil {
-				return err
-			}
-			cfg.Token = ""
-			cfg.User = nil
-			if err := cfg.Save(); err != nil {
-				return err
-			}
-			fmt.Println("Logged out.")
-			return nil
-		},
-	}
 }
 
 // saveAuth persists the token and user from an auth response.

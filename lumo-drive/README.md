@@ -50,7 +50,7 @@ lumo-drive/
 │   │   ├── state/          # SQLite local state (path<->id, snapshots, journal)
 │   │   ├── transfer/       # chunking, upload, download
 │   │   ├── sync/           # reconcile engine, conflict policy, daemon
-│   │   └── cmd/            # cobra commands + interactive app
+│   │   └── app/            # interactive app entry point
 │   └── run.sh              # build + run under tmux
 ├── postgres.sh             # spin up a local Postgres in Docker
 └── go.mod                  # single module: .../lumo-drive
@@ -112,10 +112,9 @@ Attach to complete first-time login, then detach (`Ctrl-b` then `d`) and the
 daemon keeps running. Logs stream to the tmux pane and to
 `<sync_dir>/.lumo/lumo.log`.
 
-`run.sh` verbs: `start` (default), `attach`, `stop`, and `--dev <args>` (runs via
-`go run`). Any other argument is run as a foreground subcommand, e.g.
-`./run.sh sync`. Running the binary directly with no arguments (`./bin/lumo`)
-does the same interactive flow in the foreground.
+`run.sh` verbs: `start` (default), `attach`, `stop`, and `--dev` (runs the
+interactive app via `go run` without a separate build). Running the binary
+directly (`./bin/lumo`) does the same interactive flow in the foreground.
 
 **Shutdown is graceful:** `./run.sh stop` (or `Ctrl+C` while attached/foreground)
 sends `SIGINT` so the daemon flushes state and closes the DB; a second `Ctrl+C`
@@ -136,23 +135,17 @@ SESSION=client-2 ./run.sh stop
 `attach`/`stop` only need `SESSION`. Give each client a **different sync
 directory** — two daemons must not share one `.lumo/state.db`.
 
-#### Client commands
+#### Client app
 
-| Command           | Description                                                   |
-|-------------------|---------------------------------------------------------------|
-| `lumo`            | Interactive app: ensure login + sync dir, then run the daemon.|
-| `lumo register`   | Create an account (prompts for username/email/password).      |
-| `lumo login`      | Log in; stores the JWT in the config file.                    |
-| `lumo logout`     | Clear the saved token.                                         |
-| `lumo init <dir>` | Designate `<dir>` as the sync root; creates `.lumo/state.db`. |
-| `lumo status`     | Show client id, server, user, sync dir, reachability, cursor. |
-| `lumo push`       | Upload new/changed local files; propagate local deletions.    |
-| `lumo pull`       | Apply remote changes from the sync-changes feed.              |
-| `lumo sync`       | Reconcile both ways in one pass (pull then push).             |
-| `lumo daemon`     | Watch the directory + poll the server, syncing continuously.  |
+`lumo` takes no subcommands — it's a single interactive app. On start it:
 
-`daemon` flags: `--poll` (remote poll interval, default `15s`) and `--debounce`
-(coalesce local filesystem events, default `2s`).
+1. **Authenticates** — if there's no saved login, it shows a **Login / Register**
+   menu (prompts for username/email/password) and stores the JWT in the config.
+2. **Sets a sync directory** — if none is configured, it prompts for one and
+   creates the local state database (`.lumo/state.db`) under it.
+3. **Runs the sync daemon** — watches the directory for local changes (debounced)
+   and polls the server for remote changes, reconciling both ways continuously
+   until interrupted.
 
 #### Client config & local state
 

@@ -7,10 +7,8 @@
 #   ./run.sh attach         # attach to the session (to log in / watch logs)
 #   ./run.sh stop           # stop the background session
 #
-# Foreground usage (scripting individual subcommands):
-#   ./run.sh status
-#   ./run.sh sync
-#   ./run.sh --dev sync     # run via `go run .` without a separate build
+# Foreground usage:
+#   ./run.sh --dev          # run the interactive app via `go run .` (no build)
 #
 # On first start the app has no saved login: attach to the session
 # (`./run.sh attach`) to log in or register, then detach (Ctrl-b then d) and the
@@ -79,8 +77,8 @@ stop)
 
 start)
     if ! command -v tmux >/dev/null 2>&1; then
-        echo "tmux is not installed. Install tmux, or run a subcommand directly," >&2
-        echo "e.g. ./run.sh sync" >&2
+        echo "tmux is not installed. Install tmux, or run the app in the" >&2
+        echo "foreground with ./run.sh --dev" >&2
         exit 1
     fi
     if tmux has-session -t "$SESSION" 2>/dev/null; then
@@ -99,8 +97,8 @@ start)
     ;;
 
 *)
-    # Any other arguments: run the CLI subcommand in the foreground.
-    build
-    exec "./$BIN_PATH" "$@"
+    echo "Unknown command: $1" >&2
+    echo "Usage: ./run.sh [start|attach|stop|--dev]" >&2
+    exit 1
     ;;
 esac

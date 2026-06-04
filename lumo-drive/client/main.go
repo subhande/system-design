@@ -11,7 +11,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/desubhan/system-design/lumo-drive/client/internal/cmd"
+	"github.com/desubhan/system-design/lumo-drive/client/internal/app"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		os.Exit(130) // 128 + SIGINT
 	}()
 
-	if err := cmd.NewRootCmd().ExecuteContext(ctx); err != nil {
+	if err := app.Run(ctx); err != nil {
 		// A cancelled context is a clean, signal-driven shutdown.
 		if errors.Is(err, context.Canceled) {
 			os.Exit(0)

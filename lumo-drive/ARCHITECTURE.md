@@ -70,8 +70,8 @@ horizontally behind a load balancer.
 
 ### 2.2 Client (`client/`)
 
-- **CLI / app:** [cobra](https://github.com/spf13/cobra). Running with no
-  subcommand launches the interactive app (login/register → daemon).
+- **App:** a single interactive program (no subcommands). On start it ensures a
+  login (login/register menu) and a sync directory, then runs the daemon.
 - **Local state:** embedded SQLite (`modernc.org/sqlite`, pure-Go) at
   `<sync_dir>/.lumo/state.db`.
 - **Transfer:** `transfer/` does 5 MiB chunking + SHA-256, presigned PUT/GET.
